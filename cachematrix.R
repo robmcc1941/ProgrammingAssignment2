@@ -1,5 +1,5 @@
 # makeCacheMatrix(amtrx)
-
+#
 # creates a special copy of a matrix with storage for the inverse of the matrix
 # for caching them in an external environment
 # (this assumes the matrix is an invertible square matrix)
@@ -17,39 +17,41 @@
 #  for validity.)
 
 makeCacheMatrix <- function(amtrx = matrix()) {
-        mtrxinverse <- NULL  # initially the inverse matrix is NULL
+# initiate the inverse matrix to NULL
+        mtrxinverse <- NULL  
 		
-							 # set(y) stores matrix y in the external environment
-							 # and resets the inverse matrix to NULL
+# set(y) stores matrix y in the external environment
+# and resets the inverse matrix to NULL
         set <- function(y) { 
                 amtrx <<- y
                 mtrxinverse <<- NULL
 	        }
 		
-							  # get() simply returns the matrix stored in the external
-							  # environment
+# get() simply returns the matrix stored
+# in the external environment
 				
         get <- function() amtrx
 		
-							  # setMinverse(inverse) stores its argument
-							  # which should be the inverse matrix of
-							  # the stored matrix
+# setMinverse(inverse) stores its argument
+# which should be the inverse matrix of
+# the stored matrix
 							  
         setMinverse <- function(inverse) mtrxinverse <<- inverse
 		
-							  # getMinverse() returns the value stored in the 
-							  # cache that should be the inverse matrix
-							  # of the stored matrix
+# getMinverse() returns the value stored in the 
+# cache that should be the inverse matrix
+# of the stored matrix
         getMinverse <- function() mtrxinverse
 		
-							  # return a list of these 4 functions	
-							  # so they can be applied  to the cached data
-							  # by name
+# return a list of these 4 functions	
+# so they can be applied  to the cached data
+# by name
         list(set = set, get = get,
              setMinverse = setMinverse, getMinverse = getMinverse)
 }
 
 #cacheSolve(amtrx)
+#
 #produces the inverse matrix of the matrix stored in an object outside the current
 #environment which has been created using makeCacheMatrix(amtrx).
 # If the inverse has not yet been calculated, it is calculated using solve()
@@ -60,29 +62,32 @@ makeCacheMatrix <- function(amtrx = matrix()) {
 # that was stored in the cache 
 
 cacheSolve <- function(amtrx, ...) {
-							# retrieve the inverse matrix stored in the external
-							# environemnt object amtrx
+# getMinverse() retrieves the inverse matrix stored in the external
+# environemnt object amtrx
+
         mtrxinverse <- amtrx$getMinverse()
-							# if the value returned is not NULL
-							# the inverse of the stored matrix has already
-							# been calculated and it is returned
-							# a message is printed to indicate that the value
-							# had been previously cached
+# if the value returned is not NULL
+# the inverse of the stored matrix has already
+# been calculated and it is returned
+# a message is printed to indicate that the value
+# had been previously cached
+
         if(!is.null(mtrxinverse)) {
                 message("getting cached data")
                 return(mtrxinverse)
         }
 		
-							# otherwise the inverse has not previously been
-							# calculated, so we retrieve the stored matrix
-							# and calculate its inverse and store it in the cache
-							# the newly calculate inverse is returned
+# otherwise the inverse has not previously been
+# calculated, so we retrieve the stored matrix
+# and calculate its inverse and store it in the cache
+# the newly calculate inverse is returned
+
         data <- amtrx$get()
         mtrxinverse <- solve(data, ...)        
         amtrx$setMinverse(mtrxinverse)
 }
 
-# some sample matrices I used to test my functions
+# below are some sample matrices I used to test my functions
 # these are all square invertible matrices
 # note that if you pass a matrix to makeCacheMatrix(x)
 # that is not a square matrix or is not an invertible square matrix
